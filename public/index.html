@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Estacionamento</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; text-align: center; background: #eef2f3; margin: 0; padding: 40px; color: #333; }
+        .dashboard { max-width: 450px; background: #fff; padding: 40px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); margin: 0 auto; }
+        h1 { font-size: 26px; color: #2c3e50; margin-bottom: 5px; }
+        p.subtitle { color: #7f8c8d; margin-bottom: 30px; font-size: 14px; }
+        .vagas-box { font-size: 80px; font-weight: 800; color: #10b981; margin: 10px 0; transition: color 0.3s; }
+        .status-badge { font-size: 14px; font-weight: bold; text-transform: uppercase; padding: 6px 16px; border-radius: 30px; display: inline-block; margin-bottom: 10px; letter-spacing: 1px; }
+        .livre { background: #d1fae5; color: #065f46; }
+        .atencao { background: #fef3c7; color: #92400e; }
+        .lotado { background: #fee2e2; color: #991b1b; }
+
+        /* Módulo Semáforo Virtual */
+        .semaforo-container {
+            background: #222;
+            width: 80px;
+            padding: 20px 10px;
+            border-radius: 20px;
+            margin: 20px auto;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+        .luz {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #333;
+            transition: all 0.3s ease;
+        }
+        .luz.vermelha.ativa { background: #ff4d4d; box-shadow: 0 0 20px #ff4d4d; }
+        .luz.amarela.ativa { background: #ffcc00; box-shadow: 0 0 20px #ffcc00; }
+        .luz.verde.ativa { background: #2ecc71; box-shadow: 0 0 20px #2ecc71; }
+
+        /* NOVO: Estilização do Botão de Controle da Cancela */
+        .btn-cancela {
+            width: 100%;
+            border: none;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-top: 25px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .btn-abrir { background: #3b82f6; color: #fff; }
+        .btn-abrir:hover { background: #2563eb; transform: translateY(-1px); }
+        .btn-fechar { background: #ef4444; color: #fff; }
+        .btn-fechar:hover { background: #dc2626; transform: translateY(-1px); }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <h1>Dashboard Mosquitto</h1>
+        <p class="subtitle">Monitoramento de Estacionamento Real-Time</p>
+        
+        <div id="status" class="status-badge livre">Conectando...</div>
+
+        <div class="semaforo-container">
+            <div id="luz-vermelha" class="luz vermelha"></div>
+            <div id="luz-amarela" class="luz amarela"></div>
+            <div id="luz-verde" class="luz verde"></div>
+        </div>
+
+        <div id="vagas" class="vagas-box">--</div>
+
+        <!-- NOVO: Botão Dinâmico da Cancela -->
+        <button id="btn-controle" class="btn-cancela btn-abrir" onclick="alternarCancela()">🔓 Abrir Cancela</button>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io('http://localhost:3000');
+        let cancelaAberta = false; // Controle interno do estado da cancela
+
+        socket.on('connect', () => {
+            document.getElementById('status').innerText = "Conectado ao Servidor";
+            document.getElementById('status').className = "status-badge livre";
+        });
+
+        socket.on('disconnect', () => {
+            document.getElementById('status').innerText = "Conectando...";
+            document.getElementById('status').className = "status-badge lotado";
+            resetSemaforo();
+        });
+
+        socket.on('atualizarVagas', (data) => {
+            const numVagas = data.vagas;
+            const elementoVagas = document.getElementById('vagas');
+            const elementoStatus = document.getElementById('status');
+            elementoVagas.innerText = numVagas;
+            
+            resetSemaforo();
+
+            if(numVagas === 0) {
+                elementoVagas.style.color = "#ef4444";
+                elementoStatus.innerText = "Status: LOTADO";
+                elementoStatus.className = "status-badge lotado";
+                document.getElementById('luz-vermelha').classList.add('ativa');
+            } else if(numVagas === 1) {
+                elementoVagas.style.color = "#f59e0b";
+                elementoStatus.innerText = "Status: ATENÇÃO (ÚLTIMA VAGA)";
+                elementoStatus.className = "status-badge atencao";
+                document.getElementById('luz-amarela').classList.add('ativa');
+            } else {
+                elementoVagas.style.color = "#10b981";
+                elementoStatus.innerText = "Status: VAGAS LIVRES";
+                elementoStatus.className = "status-badge livre";
+                document.getElementById('luz-verde').classList.add('ativa');
+            }
+        });
+
+        function resetSemaforo() {
+            document.getElementById('luz-vermelha').classList.remove('ativa');
+            document.getElementById('luz-amarela').classList.remove('ativa');
+            document.getElementById('luz-verde').classList.remove('ativa');
+        }
+
+        /* NOVO: Função JavaScript que envia o comando via Socket.io e altera o visual do botão */
+        function alternarCancela() {
+            const botao = document.getElementById('btn-controle');
+            
+            if (!cancelaAberta) {
+                socket.emit('comando', 'abrir');
+                botao.innerText = "🔒 Fechar Cancela";
+                botao.className = "btn-cancela btn-fechar";
+                cancelaAberta = true;
+            } else {
+                socket.emit('comando', 'fechar');
+                botao.innerText = "🔓 Abrir Cancela";
+                botao.className = "btn-cancela btn-abrir";
+                cancelaAberta = false;
+            }
+        }
+    </script>
+</body>
+</html>
