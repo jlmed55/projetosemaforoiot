@@ -3,144 +3,766 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Estacionamento</title>
+    <meta name="theme-color" content="#f2f4f1">
+    <title>Pátio | Monitoramento</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; text-align: center; background: #eef2f3; margin: 0; padding: 40px; color: #333; }
-        .dashboard { max-width: 450px; background: #fff; padding: 40px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); margin: 0 auto; }
-        h1 { font-size: 26px; color: #2c3e50; margin-bottom: 5px; }
-        p.subtitle { color: #7f8c8d; margin-bottom: 30px; font-size: 14px; }
-        .vagas-box { font-size: 80px; font-weight: 800; color: #10b981; margin: 10px 0; transition: color 0.3s; }
-        .status-badge { font-size: 14px; font-weight: bold; text-transform: uppercase; padding: 6px 16px; border-radius: 30px; display: inline-block; margin-bottom: 10px; letter-spacing: 1px; }
-        .livre { background: #d1fae5; color: #065f46; }
-        .atencao { background: #fef3c7; color: #92400e; }
-        .lotado { background: #fee2e2; color: #991b1b; }
+        :root {
+            color-scheme: light;
+            --ink: #202722;
+            --muted: #737d75;
+            --paper: #f2f4f1;
+            --surface: #ffffff;
+            --line: #e4e8e3;
+            --green: #b9f36b;
+            --green-dark: #315b18;
+            --red: #f26b59;
+            --yellow: #f3c84b;
+            --font-body: 'DM Sans', 'Segoe UI', sans-serif;
+            --font-display: 'Space Grotesk', 'Segoe UI', sans-serif;
+        }
 
-        /* Módulo Semáforo Virtual */
-        .semaforo-container {
-            background: #222;
-            width: 80px;
-            padding: 20px 10px;
-            border-radius: 20px;
-            margin: 20px auto;
-            box-shadow: 0 8px 15px rgba(0,0,0,0.3);
+        * { box-sizing: border-box; }
+
+        body {
+            min-width: 320px;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0 32px 32px;
+            background-color: var(--paper);
+            background-image: radial-gradient(#dce2db 0.7px, transparent 0.7px);
+            background-size: 18px 18px;
+            color: var(--ink);
+            font-family: var(--font-body);
+        }
+
+        button { font: inherit; }
+
+        .topbar {
+            max-width: 1120px;
+            min-height: 88px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(32, 39, 34, 0.12);
+        }
+
+        .brand { display: flex; align-items: center; gap: 12px; }
+
+        .brand-mark {
+            width: 42px;
+            height: 42px;
+            display: grid;
+            place-items: center;
+            border-radius: 13px;
+            background: var(--ink);
+            color: var(--green);
+            font-family: var(--font-display);
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .brand-name {
+            display: block;
+            font-family: var(--font-display);
+            font-size: 17px;
+            font-weight: 700;
+            line-height: 1.1;
+        }
+
+        .brand-caption {
+            display: block;
+            margin-top: 4px;
+            color: var(--muted);
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .connection {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            padding: 9px 13px;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            background: var(--surface);
+            color: #59635b;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .connection-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--yellow);
+            box-shadow: 0 0 0 3px rgba(243, 200, 75, 0.18);
+        }
+
+        .connection.online .connection-dot {
+            background: #54b879;
+            box-shadow: 0 0 0 3px rgba(84, 184, 121, 0.16);
+        }
+
+        .connection.offline .connection-dot {
+            background: var(--red);
+            box-shadow: 0 0 0 3px rgba(242, 107, 89, 0.16);
+        }
+
+        main { max-width: 1120px; margin: 0 auto; }
+
+        .page-heading {
+            display: flex;
+            align-items: end;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 38px 0 24px;
+        }
+
+        .eyebrow {
+            margin: 0 0 8px;
+            color: #657166;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+        }
+
+        h1 {
+            margin: 0;
+            font-family: var(--font-display);
+            font-size: 34px;
+            font-weight: 600;
+            line-height: 1.15;
+            letter-spacing: 0;
+        }
+
+        .heading-note { margin: 8px 0 0; color: var(--muted); font-size: 14px; }
+
+        .date-label {
+            padding-bottom: 3px;
+            color: #606a62;
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .overview {
+            min-height: 0;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            overflow: hidden;
+            border-radius: 8px;
+            background: var(--ink);
+            color: white;
+            animation: arrive 500ms ease-out both;
+        }
+
+        .availability {
+            position: relative;
+            min-height: 255px;
+            padding: 36px 42px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            align-items: center;
+            justify-content: space-between;
+            overflow: hidden;
+            isolation: isolate;
         }
-        .luz {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: #333;
-            transition: all 0.3s ease;
-        }
-        .luz.vermelha.ativa { background: #ff4d4d; box-shadow: 0 0 20px #ff4d4d; }
-        .luz.amarela.ativa { background: #ffcc00; box-shadow: 0 0 20px #ffcc00; }
-        .luz.verde.ativa { background: #2ecc71; box-shadow: 0 0 20px #2ecc71; }
 
-        /* NOVO: Estilização do Botão de Controle da Cancela */
-        .btn-cancela {
-            width: 100%;
-            border: none;
-            padding: 16px;
-            font-size: 16px;
-            font-weight: 600;
-            border-radius: 12px;
-            cursor: pointer;
-            margin-top: 25px;
-            transition: all 0.2s;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        .availability::after {
+            position: absolute;
+            z-index: -1;
+            right: -12px;
+            bottom: -100px;
+            width: 280px;
+            height: 390px;
+            border: 2px solid rgba(255, 255, 255, 0.075);
+            border-radius: 48% 48% 0 0;
+            content: '';
+            transform: rotate(27deg);
         }
-        .btn-abrir { background: #3b82f6; color: #fff; }
-        .btn-abrir:hover { background: #2563eb; transform: translateY(-1px); }
-        .btn-fechar { background: #ef4444; color: #fff; }
-        .btn-fechar:hover { background: #dc2626; transform: translateY(-1px); }
+
+        .availability-label {
+            margin: 0;
+            color: #bdc8bd;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.4px;
+        }
+
+        .count-line { display: flex; align-items: baseline; gap: 14px; }
+
+        .vacancy-count {
+            color: var(--green);
+            font-family: var(--font-display);
+            font-size: 112px;
+            font-weight: 600;
+            line-height: 0.95;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 0;
+            transition: color 220ms ease;
+        }
+
+        .vacancy-unit { color: #d7ded7; font-size: 16px; font-weight: 500; }
+
+        .availability[data-state="full"] .vacancy-count { color: #ff8170; }
+        .availability[data-state="attention"] .vacancy-count { color: var(--yellow); }
+
+        .availability-foot {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #bdc8bd;
+            font-size: 12px;
+        }
+
+        .availability-indicator {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: #859087;
+        }
+
+        [data-state="open"] .availability-indicator { background: var(--green); }
+        [data-state="attention"] .availability-indicator { background: var(--yellow); }
+        [data-state="full"] .availability-indicator { background: var(--red); }
+
+        .signal-panel {
+            margin-top: 22px;
+            padding: 22px 32px 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            overflow: hidden;
+            border-radius: 8px;
+            background: var(--ink);
+            color: white;
+        }
+
+        .signal-title {
+            margin: 0;
+            color: #bdc8bd;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.4px;
+        }
+
+        .street-scene {
+            position: relative;
+            min-height: 174px;
+            margin: 8px -32px 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            isolation: isolate;
+        }
+
+        .street-scene::before {
+            position: absolute;
+            z-index: -1;
+            top: 65px;
+            right: 0;
+            left: 0;
+            height: 72px;
+            border-top: 1px solid rgba(255, 255, 255, 0.11);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.11);
+            background-color: #303832;
+            background-image: repeating-linear-gradient(90deg, transparent 0 42px, rgba(238, 244, 233, 0.5) 42px 66px, transparent 66px 108px);
+            background-position: center;
+            background-repeat: repeat-x;
+            background-size: auto 2px;
+            content: '';
+        }
+
+        .street-scene::after {
+            position: absolute;
+            z-index: -1;
+            top: 0;
+            bottom: 0;
+            left: calc(50% - 36px);
+            width: 72px;
+            border-right: 1px solid rgba(255, 255, 255, 0.11);
+            border-left: 1px solid rgba(255, 255, 255, 0.11);
+            background-color: #303832;
+            background-image: repeating-linear-gradient(0deg, transparent 0 42px, rgba(238, 244, 233, 0.5) 42px 66px, transparent 66px 108px);
+            background-position: center;
+            background-repeat: repeat-y;
+            background-size: 2px auto;
+            content: '';
+        }
+
+        .street-signal {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .street-signal-name {
+            color: #e1e8df;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .street-light {
+            position: relative;
+            width: 52px;
+            padding: 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 15px;
+            background: #141a16;
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+        }
+
+        .street-light::after {
+            position: absolute;
+            z-index: -1;
+            top: calc(100% - 1px);
+            left: calc(50% - 2px);
+            width: 4px;
+            height: 40px;
+            background: #89938b;
+            content: '';
+        }
+
+        .light {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #303832;
+            transition: background 220ms ease, box-shadow 220ms ease;
+        }
+
+        .light.red.active { background: var(--red); box-shadow: 0 0 16px rgba(242, 107, 89, 0.55); }
+        .light.yellow.active { background: var(--yellow); box-shadow: 0 0 16px rgba(243, 200, 75, 0.5); }
+        .light.green.active { background: var(--green); box-shadow: 0 0 16px rgba(185, 243, 107, 0.48); }
+
+        .signal-status {
+            min-height: 16px;
+            margin: 0;
+            color: #f0f4ee;
+            font-size: 11px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .signal-caption { margin: 0; color: #9da99e; font-size: 10px; text-align: center; }
+
+        .section-label {
+            margin: 30px 0 13px;
+            color: #657166;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+        }
+
+        .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+        .detail-panel {
+            min-height: 164px;
+            padding: 23px 25px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: var(--surface);
+            animation: arrive 500ms 100ms ease-out both;
+        }
+
+        .detail-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .detail-title { margin: 0; font-size: 14px; font-weight: 700; }
+
+        .detail-index {
+            color: #879087;
+            font-family: var(--font-display);
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .detail-value { margin: 14px 0 0; font-family: var(--font-display); font-size: 21px; font-weight: 600; }
+        .detail-description { margin: 5px 0 0; color: var(--muted); font-size: 12px; }
+
+        .barrier-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+
+        .barrier-state {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            color: #687169;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .barrier-state::before {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #a0a9a0;
+            content: '';
+        }
+
+        .barrier-state.open { color: var(--green-dark); }
+        .barrier-state.open::before { background: #65ad45; }
+
+        .barrier-button {
+            min-width: 142px;
+            min-height: 44px;
+            padding: 0 16px;
+            border: 0;
+            border-radius: 6px;
+            background: var(--ink);
+            color: white;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 700;
+            transition: background 160ms ease, transform 160ms ease;
+        }
+
+        .barrier-button:hover:not(:disabled) { background: #3c4940; transform: translateY(-1px); }
+        .barrier-button.close { background: #a64035; }
+        .barrier-button.close:hover:not(:disabled) { background: #87352c; }
+        .barrier-button:disabled { cursor: not-allowed; opacity: 0.45; }
+        .barrier-button:focus-visible { outline: 3px solid #a7d777; outline-offset: 3px; }
+
+        .footer-note {
+            margin: 22px 0 0;
+            color: #879087;
+            font-size: 11px;
+            text-align: right;
+        }
+
+        @keyframes arrive {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 700px) {
+            body { padding: 0 18px 24px; }
+            .topbar { min-height: 76px; }
+            .brand-mark { width: 38px; height: 38px; }
+            .brand-caption { font-size: 9px; }
+            .connection { padding: 8px 10px; font-size: 11px; }
+            .page-heading { align-items: flex-start; flex-direction: column; gap: 12px; padding: 30px 0 20px; }
+            h1 { font-size: 29px; }
+            .date-label { font-size: 12px; }
+            .overview { min-height: 0; }
+            .availability { min-height: 240px; padding: 28px 22px; }
+            .vacancy-count { font-size: 76px; }
+            .vacancy-unit { font-size: 13px; }
+            .availability-foot { align-items: flex-start; font-size: 11px; }
+            .signal-panel { padding: 20px 18px 16px; }
+            .signal-title { font-size: 9px; letter-spacing: 1px; }
+            .street-scene { min-height: 164px; margin-right: -18px; margin-left: -18px; }
+            .street-scene::before { top: 61px; height: 66px; }
+            .street-light { width: 46px; padding: 5px; }
+            .light { width: 34px; height: 34px; }
+            .signal-status { font-size: 10px; }
+            .details-grid { grid-template-columns: 1fr; gap: 10px; }
+            .detail-panel { min-height: 148px; padding: 20px; }
+            .footer-note { text-align: left; }
+        }
+
+        @media (max-width: 390px) {
+            body { padding-right: 12px; padding-left: 12px; }
+            .brand-name { font-size: 15px; }
+            .brand-caption { letter-spacing: 0.6px; }
+            .connection { gap: 7px; padding: 8px; font-size: 10px; }
+            .availability { padding-right: 12px; padding-left: 17px; }
+            .vacancy-count { font-size: 64px; }
+            .count-line { gap: 8px; }
+            .signal-panel { padding-right: 12px; padding-left: 12px; }
+            .street-scene { margin-right: -12px; margin-left: -12px; }
+            .barrier-row { align-items: flex-start; flex-direction: column; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+        }
     </style>
 </head>
 <body>
-    <div class="dashboard">
-        <h1>Dashboard Mosquitto</h1>
-        <p class="subtitle">Monitoramento de Estacionamento Real-Time</p>
-        
-        <div id="status" class="status-badge livre">Conectando...</div>
-
-        <div class="semaforo-container">
-            <div id="luz-vermelha" class="luz vermelha"></div>
-            <div id="luz-amarela" class="luz amarela"></div>
-            <div id="luz-verde" class="luz verde"></div>
+    <header class="topbar">
+        <div class="brand" aria-label="Pátio, monitoramento de estacionamento">
+            <span class="brand-mark" aria-hidden="true">P</span>
+            <span>
+                <span class="brand-name">pátio</span>
+                <span class="brand-caption">MONITORAMENTO IOT</span>
+            </span>
         </div>
+        <div id="connection-status" class="connection" role="status" aria-live="polite">
+            <span class="connection-dot" aria-hidden="true"></span>
+            <span id="connection-label">Conectando ao servidor</span>
+        </div>
+    </header>
 
-        <div id="vagas" class="vagas-box">--</div>
+    <main>
+        <section class="page-heading" aria-labelledby="page-title">
+            <div>
+                <p class="eyebrow">CENTRAL DE OPERAÇÕES / PÁTIO 01</p>
+                <h1 id="page-title">Estacionamento</h1>
+                <p class="heading-note">Acompanhe a disponibilidade em tempo real.</p>
+            </div>
+            <time id="current-date" class="date-label"></time>
+        </section>
 
-        <!-- NOVO: Botão Dinâmico da Cancela -->
-        <button id="btn-controle" class="btn-cancela btn-abrir" onclick="alternarCancela()">🔓 Abrir Cancela</button>
-    </div>
+        <section id="availability-panel" class="overview" data-state="waiting" aria-label="Disponibilidade do estacionamento">
+            <div class="availability">
+                <p class="availability-label">VAGAS DISPONÍVEIS</p>
+                <div class="count-line">
+                    <span id="vagas" class="vacancy-count" aria-live="polite">--</span>
+                    <span class="vacancy-unit">vagas livres</span>
+                </div>
+                <div class="availability-foot">
+                    <span class="availability-indicator" aria-hidden="true"></span>
+                    <span id="availability-message" role="status" aria-live="polite">Aguardando leitura do sensor</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="signal-panel" aria-labelledby="signals-title">
+                <h2 id="signals-title" class="signal-title">SEMÁFOROS DA RUA</h2>
+                <div class="street-scene" role="group" aria-label="Cruzamento com dois semáforos">
+                    <div class="street-signal">
+                        <span class="street-signal-name">Entrada</span>
+                        <div class="street-light" data-direction="entrada" role="img" aria-label="Semáforo da entrada aguardando status independente">
+                            <span class="light red" data-signal-light="red" aria-hidden="true"></span>
+                            <span class="light yellow" data-signal-light="yellow" aria-hidden="true"></span>
+                            <span class="light green" data-signal-light="green" aria-hidden="true"></span>
+                        </div>
+                        <p id="signal-status-entrada" class="signal-status" role="status" aria-live="polite">Aguardando sinal do semáforo</p>
+                    </div>
+                    <div class="street-signal">
+                        <span class="street-signal-name">Saída</span>
+                        <div class="street-light" data-direction="saida" role="img" aria-label="Semáforo da saída aguardando status independente">
+                            <span class="light red" data-signal-light="red" aria-hidden="true"></span>
+                            <span class="light yellow" data-signal-light="yellow" aria-hidden="true"></span>
+                            <span class="light green" data-signal-light="green" aria-hidden="true"></span>
+                        </div>
+                        <p id="signal-status-saida" class="signal-status" role="status" aria-live="polite">Aguardando sinal do semáforo</p>
+                    </div>
+                </div>
+                <p class="signal-caption">Status próprios recebidos do tópico MQTT semaforo/esp32/status.</p>
+        </section>
+
+        <p class="section-label">ACESSO E SENSOR</p>
+        <section class="details-grid" aria-label="Controles do estacionamento">
+            <article class="detail-panel">
+                <div class="detail-heading">
+                    <h2 class="detail-title">Sensor de vagas</h2>
+                    <span class="detail-index">01</span>
+                </div>
+                <div>
+                    <p id="sensor-status" class="detail-value">Aguardando conexão</p>
+                    <p id="sensor-description" class="detail-description">Os dados aparecerão quando o ESP32 enviar uma leitura.</p>
+                </div>
+            </article>
+
+            <article class="detail-panel">
+                <div class="detail-heading">
+                    <h2 class="detail-title">Cancela de acesso</h2>
+                    <span class="detail-index">02</span>
+                </div>
+                <div class="barrier-row">
+                    <div>
+                        <span id="barrier-state" class="barrier-state">Estado não confirmado</span>
+                        <p id="barrier-description" class="detail-description">A posição física depende de confirmação do ESP32.</p>
+                    </div>
+                    <button id="btn-controle" class="barrier-button" type="button" disabled>Abrir cancela</button>
+                </div>
+            </article>
+        </section>
+
+        <p class="footer-note">Estacionamento conectado via ESP32 e Mosquitto</p>
+    </main>
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        const socket = io('http://localhost:3000');
-        let cancelaAberta = false; // Controle interno do estado da cancela
+        const socket = io();
+        const availabilityPanel = document.getElementById('availability-panel');
+        const connectionStatus = document.getElementById('connection-status');
+        const connectionLabel = document.getElementById('connection-label');
+        const availabilityMessage = document.getElementById('availability-message');
+        const signalStatuses = {
+            entrada: document.getElementById('signal-status-entrada'),
+            saida: document.getElementById('signal-status-saida')
+        };
+        const sensorStatus = document.getElementById('sensor-status');
+        const sensorDescription = document.getElementById('sensor-description');
+        const barrierButton = document.getElementById('btn-controle');
+        const barrierState = document.getElementById('barrier-state');
+        const barrierDescription = document.getElementById('barrier-description');
+        let cancelaAberta = false;
+        let recebeuLeitura = false;
+        let recebeuStatusSemaforos = false;
+        let mqttConectado = false;
+        let comandoPendente = false;
+
+        document.getElementById('current-date').textContent = new Intl.DateTimeFormat('pt-BR', {
+            weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+        }).format(new Date());
 
         socket.on('connect', () => {
-            document.getElementById('status').innerText = "Conectado ao Servidor";
-            document.getElementById('status').className = "status-badge livre";
+            atualizarConexao();
+            if (!recebeuLeitura) {
+                sensorStatus.textContent = 'Aguardando leitura';
+                sensorDescription.textContent = 'Conexão ativa. Aguardando dados do ESP32.';
+            }
+        });
+
+        socket.on('mqttStatus', (conectado) => {
+            mqttConectado = conectado;
+            atualizarConexao();
+            if (!mqttConectado && socket.connected) {
+                barrierDescription.textContent = 'Broker MQTT desconectado. O comando não pode ser enviado.';
+                atualizarSemaforos(null, 'Sem conexão MQTT');
+            } else if (mqttConectado && !comandoPendente) {
+                barrierDescription.textContent = 'A posição física depende de confirmação do ESP32.';
+                if (!recebeuStatusSemaforos) {
+                    atualizarSemaforos(null, 'Aguardando sinal do semáforo');
+                }
+            }
         });
 
         socket.on('disconnect', () => {
-            document.getElementById('status').innerText = "Conectando...";
-            document.getElementById('status').className = "status-badge lotado";
-            resetSemaforo();
+            mqttConectado = false;
+            comandoPendente = false;
+            atualizarConexao();
+            atualizarSemaforos(null, 'Sem conexão');
+            barrierDescription.textContent = 'Conexão perdida. Não foi possível confirmar o envio.';
+            if (recebeuLeitura) {
+                availabilityMessage.textContent = 'Sem conexão · exibindo última leitura';
+                sensorStatus.textContent = 'Sem conexão';
+                sensorDescription.textContent = 'A última leitura permanece exibida até a conexão voltar.';
+            } else {
+                availabilityMessage.textContent = 'Aguardando conexão com o servidor';
+                sensorStatus.textContent = 'Sem conexão';
+                sensorDescription.textContent = 'Verifique o servidor para receber dados do ESP32.';
+            }
         });
 
         socket.on('atualizarVagas', (data) => {
-            const numVagas = data.vagas;
-            const elementoVagas = document.getElementById('vagas');
-            const elementoStatus = document.getElementById('status');
-            elementoVagas.innerText = numVagas;
-            
-            resetSemaforo();
+            const numVagas = Number(data && data.vagas);
+            if (!Number.isInteger(numVagas) || numVagas < 0) return;
 
-            if(numVagas === 0) {
-                elementoVagas.style.color = "#ef4444";
-                elementoStatus.innerText = "Status: LOTADO";
-                elementoStatus.className = "status-badge lotado";
-                document.getElementById('luz-vermelha').classList.add('ativa');
-            } else if(numVagas === 1) {
-                elementoVagas.style.color = "#f59e0b";
-                elementoStatus.innerText = "Status: ATENÇÃO (ÚLTIMA VAGA)";
-                elementoStatus.className = "status-badge atencao";
-                document.getElementById('luz-amarela').classList.add('ativa');
+            atualizarDadosSemaforos(data);
+            recebeuLeitura = true;
+            document.getElementById('vagas').textContent = numVagas;
+            if (numVagas === 0) {
+                availabilityPanel.dataset.state = 'full';
+                availabilityMessage.textContent = 'Estacionamento lotado';
+                sensorStatus.textContent = 'Lotado';
+                sensorDescription.textContent = 'Nenhuma vaga livre no momento.';
+            } else if (numVagas === 1) {
+                availabilityPanel.dataset.state = 'attention';
+                availabilityMessage.textContent = 'Última vaga disponível';
+                sensorStatus.textContent = 'Última vaga';
+                sensorDescription.textContent = 'Há apenas uma vaga livre no momento.';
             } else {
-                elementoVagas.style.color = "#10b981";
-                elementoStatus.innerText = "Status: VAGAS LIVRES";
-                elementoStatus.className = "status-badge livre";
-                document.getElementById('luz-verde').classList.add('ativa');
+                availabilityPanel.dataset.state = 'open';
+                availabilityMessage.textContent = 'Vagas disponíveis';
+                sensorStatus.textContent = 'Vagas disponíveis';
+                sensorDescription.textContent = 'O estacionamento tem vagas livres.';
             }
         });
 
-        function resetSemaforo() {
-            document.getElementById('luz-vermelha').classList.remove('ativa');
-            document.getElementById('luz-amarela').classList.remove('ativa');
-            document.getElementById('luz-verde').classList.remove('ativa');
+        function atualizarDadosSemaforos(data) {
+            if (!data || typeof data !== 'object') return;
+
+            const cores = {
+                vermelho: 'red', red: 'red', r: 'red',
+                amarelo: 'yellow', yellow: 'yellow', y: 'yellow',
+                verde: 'green', green: 'green', g: 'green',
+                apagado: 'off', off: 'off'
+            };
+            const valorEntrada = data.sem1 ?? data.semaforo1 ?? data.entrada;
+            const valorSaida = data.sem2 ?? data.semaforo2 ?? data.saida;
+            const estados = {
+                entrada: cores[String(valorEntrada ?? '').trim().toLowerCase()],
+                saida: cores[String(valorSaida ?? '').trim().toLowerCase()]
+            };
+            if (estados.entrada === undefined || estados.saida === undefined) return;
+
+            recebeuStatusSemaforos = true;
+            atualizarSemaforos(estados);
         }
 
-        /* NOVO: Função JavaScript que envia o comando via Socket.io e altera o visual do botão */
-        function alternarCancela() {
-            const botao = document.getElementById('btn-controle');
-            
-            if (!cancelaAberta) {
-                socket.emit('comando', 'abrir');
-                botao.innerText = "🔒 Fechar Cancela";
-                botao.className = "btn-cancela btn-fechar";
-                cancelaAberta = true;
-            } else {
-                socket.emit('comando', 'fechar');
-                botao.innerText = "🔓 Abrir Cancela";
-                botao.className = "btn-cancela btn-abrir";
-                cancelaAberta = false;
-            }
+        socket.on('atualizarSemaforos', atualizarDadosSemaforos);
+
+        function atualizarSemaforos(estados, mensagem) {
+            Object.keys(signalStatuses).forEach((direcao) => {
+                const cor = estados && estados[direcao];
+                const nomeCor = { red: 'Vermelho', yellow: 'Amarelo', green: 'Verde', off: 'Apagado' }[cor];
+                const status = nomeCor || mensagem;
+                const semaforo = document.querySelector(`.street-light[data-direction="${direcao}"]`);
+                const nomeDirecao = direcao === 'saida' ? 'saída' : 'entrada';
+
+                signalStatuses[direcao].textContent = status;
+                semaforo.setAttribute('aria-label', `Semáforo da ${nomeDirecao}: ${status.toLowerCase()}`);
+                semaforo.querySelectorAll('[data-signal-light]').forEach((luz) => {
+                    luz.classList.toggle('active', luz.dataset.signalLight === cor);
+                });
+            });
         }
+
+        function atualizarConexao() {
+            if (!socket.connected) {
+                connectionStatus.className = 'connection offline';
+                connectionLabel.textContent = 'Servidor desconectado';
+            } else if (!mqttConectado) {
+                connectionStatus.className = 'connection offline';
+                connectionLabel.textContent = 'Broker MQTT desconectado';
+            } else {
+                connectionStatus.className = 'connection online';
+                connectionLabel.textContent = 'MQTT conectado';
+            }
+
+            barrierButton.disabled = !socket.connected || !mqttConectado || comandoPendente;
+        }
+
+        barrierButton.addEventListener('click', () => {
+            if (!socket.connected || !mqttConectado || comandoPendente) return;
+
+            const acao = cancelaAberta ? 'fechar' : 'abrir';
+            comandoPendente = true;
+            barrierButton.textContent = 'Enviando...';
+            barrierState.textContent = 'Enviando comando';
+            barrierDescription.textContent = 'Aguardando confirmação do broker MQTT.';
+            atualizarConexao();
+
+            socket.timeout(5000).emit('comando', acao, (erro, resultado) => {
+                comandoPendente = false;
+                atualizarConexao();
+
+                if (erro || !resultado || !resultado.ok) {
+                    barrierButton.textContent = cancelaAberta ? 'Abrir cancela' : 'Fechar cancela';
+                    barrierButton.classList.toggle('close', cancelaAberta);
+                    barrierState.textContent = 'Envio não confirmado';
+                    barrierDescription.textContent = resultado && resultado.mensagem
+                        ? resultado.mensagem
+                        : 'Sem confirmação do broker. Confira a conexão MQTT e tente novamente.';
+                    return;
+                }
+
+                cancelaAberta = acao === 'abrir';
+                barrierButton.textContent = cancelaAberta ? 'Fechar cancela' : 'Abrir cancela';
+                barrierButton.classList.toggle('close', cancelaAberta);
+                barrierState.textContent = `Último comando: ${acao}`;
+                barrierDescription.textContent = 'Broker MQTT confirmou o envio; posição física não confirmada.';
+            });
+        });
     </script>
 </body>
 </html>
