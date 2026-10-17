@@ -27,7 +27,7 @@ app.get('/', (req, res) => {
     res.sendFile(caminhoHtml);
 });
 
-const mqttClient = mqtt.connect('mqtt://127.0.0.1:1883');
+const mqttClient = mqtt.connect('mqtt://10.68.74.224:1883');
 let mqttConectado = false;
 let ultimaLeituraVagas = null;
 let ultimoStatusSemaforos = null;

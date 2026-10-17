@@ -4,7 +4,7 @@
 
 const char* NOME_REDE_WIFI = "SUA_REDE_WIFI";
 const char* SENHA_REDE_WIFI = "SUA_SENHA_WIFI";
-const char* ENDERECO_BROKER_MQTT = "IP_LOCAL_DO_PC";
+const char* ENDERECO_BROKER_MQTT = "10.68.74.224";
 const uint16_t PORTA_BROKER_MQTT = 1883;
 const char* TOPICO_STATUS_SEMAFOROS = "semaforo/esp32/status";
 

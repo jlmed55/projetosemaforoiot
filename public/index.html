@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#f2f4f1">
-    <title>Pátio | Monitoramento</title>
+    <title>Smart City | Monitoramento IoT</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -230,128 +230,69 @@
         [data-state="attention"] .availability-indicator { background: var(--yellow); }
         [data-state="full"] .availability-indicator { background: var(--red); }
 
-        .signal-panel {
+        .map-panel {
             margin-top: 22px;
-            padding: 22px 32px 18px;
-            display: flex;
-            flex-direction: column;
-            align-items: stretch;
             overflow: hidden;
+            border: 1px solid #d7ded5;
             border-radius: 8px;
-            background: var(--ink);
-            color: white;
+            background: #fff;
+            animation: arrive 500ms 60ms ease-out both;
         }
 
-        .signal-title {
-            margin: 0;
-            color: #bdc8bd;
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 1.4px;
-        }
-
-        .street-scene {
-            position: relative;
-            min-height: 174px;
-            margin: 8px -32px 0;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            isolation: isolate;
-        }
-
-        .street-scene::before {
-            position: absolute;
-            z-index: -1;
-            top: 65px;
-            right: 0;
-            left: 0;
-            height: 72px;
-            border-top: 1px solid rgba(255, 255, 255, 0.11);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.11);
-            background-color: #303832;
-            background-image: repeating-linear-gradient(90deg, transparent 0 42px, rgba(238, 244, 233, 0.5) 42px 66px, transparent 66px 108px);
-            background-position: center;
-            background-repeat: repeat-x;
-            background-size: auto 2px;
-            content: '';
-        }
-
-        .street-scene::after {
-            position: absolute;
-            z-index: -1;
-            top: 0;
-            bottom: 0;
-            left: calc(50% - 36px);
-            width: 72px;
-            border-right: 1px solid rgba(255, 255, 255, 0.11);
-            border-left: 1px solid rgba(255, 255, 255, 0.11);
-            background-color: #303832;
-            background-image: repeating-linear-gradient(0deg, transparent 0 42px, rgba(238, 244, 233, 0.5) 42px 66px, transparent 66px 108px);
-            background-position: center;
-            background-repeat: repeat-y;
-            background-size: 2px auto;
-            content: '';
-        }
-
-        .street-signal {
+        .map-heading {
+            min-height: 66px;
+            padding: 0 22px;
             display: flex;
-            flex-direction: column;
             align-items: center;
-            gap: 7px;
+            justify-content: space-between;
+            gap: 16px;
         }
 
-        .street-signal-name {
-            color: #e1e8df;
-            font-size: 11px;
-            font-weight: 700;
-        }
+        .map-title { margin: 0; font-size: 13px; font-weight: 700; }
+        .map-subtitle { margin: 4px 0 0; color: var(--muted); font-size: 11px; }
 
-        .street-light {
+        .map-legend { display: flex; align-items: center; gap: 14px; color: #626d64; font-size: 10px; font-weight: 600; }
+        .legend-item { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+        .legend-dot { width: 8px; height: 8px; border-radius: 50%; background: #64b879; }
+        .legend-road { width: 16px; height: 8px; border-radius: 2px; background: #32383a; }
+
+        .city-map {
             position: relative;
-            width: 52px;
-            padding: 6px;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            border-radius: 15px;
-            background: #141a16;
-            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            aspect-ratio: 1.6;
+            border-top: 1px solid #e2e7e1;
+            background: #5e9b3c;
         }
 
-        .street-light::after {
+        .city-map svg { width: 100%; height: 100%; display: block; }
+
+        .map-signal {
             position: absolute;
-            z-index: -1;
-            top: calc(100% - 1px);
-            left: calc(50% - 2px);
-            width: 4px;
-            height: 40px;
-            background: #89938b;
-            content: '';
-        }
-
-        .light {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            background: #303832;
-            transition: background 220ms ease, box-shadow 220ms ease;
-        }
-
-        .light.red.active { background: var(--red); box-shadow: 0 0 16px rgba(242, 107, 89, 0.55); }
-        .light.yellow.active { background: var(--yellow); box-shadow: 0 0 16px rgba(243, 200, 75, 0.5); }
-        .light.green.active { background: var(--green); box-shadow: 0 0 16px rgba(185, 243, 107, 0.48); }
-
-        .signal-status {
-            min-height: 16px;
-            margin: 0;
-            color: #f0f4ee;
-            font-size: 11px;
-            font-weight: 600;
+            z-index: 2;
+            width: 82px;
+            padding: 6px 7px 7px;
+            border: 1px solid rgba(255, 255, 255, 0.72);
+            border-radius: 6px;
+            background: rgba(25, 32, 30, 0.92);
+            box-shadow: 0 3px 10px rgba(16, 24, 18, 0.22);
+            color: white;
             text-align: center;
         }
 
-        .signal-caption { margin: 0; color: #9da99e; font-size: 10px; text-align: center; }
+        .map-signal--horizontal { top: 46%; left: 64%; transform: translate(-50%, -50%); }
+        .map-signal--vertical { top: 68%; left: 50%; transform: translate(-50%, -50%); }
+        .street-signal-name { display: block; margin-bottom: 5px; color: #e8eee7; font-size: 9px; font-weight: 700; }
+        .street-light { display: flex; justify-content: center; gap: 5px; }
+        .light { width: 12px; height: 12px; border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 50%; background: #414846; transition: background 220ms ease, box-shadow 220ms ease; }
+        .light.red.active { background: var(--red); box-shadow: 0 0 9px rgba(242, 107, 89, 0.7); }
+        .light.yellow.active { background: var(--yellow); box-shadow: 0 0 9px rgba(243, 200, 75, 0.7); }
+        .light.green.active { background: #7ee28f; box-shadow: 0 0 9px rgba(126, 226, 143, 0.7); }
+        .signal-status { min-height: 12px; margin: 5px 0 0; color: #cbd5ca; font-size: 9px; font-weight: 600; }
+        .parked-car { opacity: 0; transition: opacity 240ms ease; }
+        .parked-car.is-parked { opacity: 1; }
+
+        .map-caption { min-height: 36px; padding: 0 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; color: #79837a; font-size: 10px; }
+        .map-caption strong { color: #536057; font-weight: 700; }
 
         .section-label {
             margin: 30px 0 13px;
@@ -463,13 +404,14 @@
             .vacancy-count { font-size: 76px; }
             .vacancy-unit { font-size: 13px; }
             .availability-foot { align-items: flex-start; font-size: 11px; }
-            .signal-panel { padding: 20px 18px 16px; }
-            .signal-title { font-size: 9px; letter-spacing: 1px; }
-            .street-scene { min-height: 164px; margin-right: -18px; margin-left: -18px; }
-            .street-scene::before { top: 61px; height: 66px; }
-            .street-light { width: 46px; padding: 5px; }
-            .light { width: 34px; height: 34px; }
-            .signal-status { font-size: 10px; }
+            .map-heading { min-height: 60px; padding: 12px 14px; align-items: flex-start; flex-direction: column; gap: 10px; }
+            .map-title { font-size: 12px; }
+            .map-subtitle { font-size: 10px; }
+            .map-legend { gap: 8px; font-size: 9px; }
+            .city-map { min-height: 300px; aspect-ratio: 1.05; }
+            .map-signal { width: 72px; padding: 5px; }
+            .map-signal--horizontal { left: 70%; }
+            .map-caption { align-items: flex-start; flex-direction: column; justify-content: center; gap: 3px; padding: 8px 12px; }
             .details-grid { grid-template-columns: 1fr; gap: 10px; }
             .detail-panel { min-height: 148px; padding: 20px; }
             .footer-note { text-align: left; }
@@ -483,8 +425,9 @@
             .availability { padding-right: 12px; padding-left: 17px; }
             .vacancy-count { font-size: 64px; }
             .count-line { gap: 8px; }
-            .signal-panel { padding-right: 12px; padding-left: 12px; }
-            .street-scene { margin-right: -12px; margin-left: -12px; }
+            .map-legend { gap: 7px; }
+            .legend-item { gap: 4px; }
+            .city-map { min-height: 270px; }
             .barrier-row { align-items: flex-start; flex-direction: column; }
         }
 
@@ -495,10 +438,10 @@
 </head>
 <body>
     <header class="topbar">
-        <div class="brand" aria-label="Pátio, monitoramento de estacionamento">
-            <span class="brand-mark" aria-hidden="true">P</span>
+        <div class="brand" aria-label="Smart City, monitoramento de mobilidade e estacionamento">
+            <span class="brand-mark" aria-hidden="true">S</span>
             <span>
-                <span class="brand-name">pátio</span>
+                <span class="brand-name">smart city</span>
                 <span class="brand-caption">MONITORAMENTO IOT</span>
             </span>
         </div>
@@ -511,11 +454,178 @@
     <main>
         <section class="page-heading" aria-labelledby="page-title">
             <div>
-                <p class="eyebrow">CENTRAL DE OPERAÇÕES / PÁTIO 01</p>
-                <h1 id="page-title">Estacionamento</h1>
-                <p class="heading-note">Acompanhe a disponibilidade em tempo real.</p>
+                <p class="eyebrow">CENTRAL DE OPERAÇÕES / SETOR 01</p>
+                <h1 id="page-title">Smart City</h1>
+                <p class="heading-note">Mobilidade e estacionamento conectados em tempo real.</p>
             </div>
             <time id="current-date" class="date-label"></time>
+        </section>
+
+        <section class="map-panel" aria-labelledby="map-title">
+            <div class="map-heading">
+                <div>
+                    <h2 id="map-title" class="map-title">MAPA DA CIDADE</h2>
+                    <p class="map-subtitle">Cruzamento central · setor 01</p>
+                </div>
+                <div class="map-legend" aria-label="Legenda do mapa">
+                    <span class="legend-item"><span class="legend-dot" aria-hidden="true"></span>Áreas verdes</span>
+                    <span class="legend-item"><span class="legend-road" aria-hidden="true"></span>Vias urbanas</span>
+                </div>
+            </div>
+            <div class="city-map">
+                <svg viewBox="0 0 1200 750" preserveAspectRatio="none" role="img" aria-label="Mapa visto de cima com cruzamento, faixas de pedestres, áreas verdes e estacionamento com cinco vagas e carros conforme a ocupação">
+                    <defs>
+                        <pattern id="grass" width="24" height="24" patternUnits="userSpaceOnUse">
+                            <rect width="24" height="24" fill="#57943a" />
+                            <circle cx="4" cy="7" r="2" fill="#72ae43" opacity=".72" />
+                            <circle cx="17" cy="4" r="1.5" fill="#387a32" opacity=".7" />
+                            <circle cx="13" cy="17" r="2.2" fill="#68a83d" opacity=".7" />
+                            <path d="M1 21l4-3m14 5 3-4" stroke="#8ab84b" stroke-width="1" opacity=".48" />
+                        </pattern>
+                        <pattern id="pavers" width="24" height="18" patternUnits="userSpaceOnUse">
+                            <rect width="24" height="18" fill="#d5d5cf" />
+                            <path d="M0 0h24M0 9h24M0 18h24M12 0v9M5 9v9" stroke="#b4b7b1" stroke-width="1" />
+                        </pattern>
+                        <pattern id="asphalt" width="30" height="30" patternUnits="userSpaceOnUse">
+                            <rect width="30" height="30" fill="#292f32" />
+                            <circle cx="5" cy="8" r=".8" fill="#687071" opacity=".24" />
+                            <circle cx="21" cy="22" r=".7" fill="#858b8a" opacity=".2" />
+                        </pattern>
+                        <pattern id="hatch" width="26" height="26" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                            <rect width="26" height="26" fill="#343a3c" />
+                            <path d="M0 0v26M13 0v26" stroke="#ffb400" stroke-width="3" />
+                        </pattern>
+                        <g id="tree">
+                            <ellipse cx="0" cy="13" rx="28" ry="17" fill="#263f25" opacity=".42" />
+                            <circle cx="-13" cy="1" r="13" fill="#28632c" />
+                            <circle cx="2" cy="-7" r="17" fill="#347c30" />
+                            <circle cx="15" cy="1" r="13" fill="#438c31" />
+                            <circle cx="-5" cy="7" r="14" fill="#4c9631" />
+                            <circle cx="-8" cy="-8" r="4" fill="#8fc83d" />
+                            <circle cx="8" cy="-12" r="4" fill="#78b938" />
+                            <circle cx="15" cy="-1" r="3" fill="#9bcf45" />
+                            <circle cx="-15" cy="3" r="3" fill="#72b33b" />
+                        </g>
+                        <g id="arrow-up" fill="#f4f5f1">
+                            <path d="M0-18l-12 18h7v18h10V0h7z" />
+                        </g>
+                        <g id="arrow-left" fill="#f4f5f1">
+                            <path d="M-18 0L0-12v7h18v10H0v7z" />
+                        </g>
+                    </defs>
+
+                    <rect width="1200" height="750" fill="url(#grass)" />
+                    <g opacity=".98">
+                        <use href="#tree" x="92" y="68" />
+                        <use href="#tree" x="235" y="115" transform="scale(.8) translate(58 28)" />
+                        <use href="#tree" x="420" y="70" transform="scale(1.1)" />
+                        <use href="#tree" x="1090" y="84" transform="scale(1.2) translate(-170 -10)" />
+                        <use href="#tree" x="880" y="120" transform="scale(.85)" />
+                        <use href="#tree" x="100" y="700" transform="scale(.85) translate(18 120)" />
+                        <use href="#tree" x="410" y="702" />
+                        <use href="#tree" x="860" y="630" transform="scale(1.1)" />
+                        <use href="#tree" x="1095" y="680" transform="scale(1.15) translate(-140 -80)" />
+                        <use href="#tree" x="820" y="65" transform="scale(.7)" />
+                        <use href="#tree" x="1050" y="515" transform="scale(.75)" />
+                    </g>
+
+                    <rect x="0" y="230" width="1200" height="34" fill="url(#pavers)" />
+                    <rect x="0" y="426" width="1200" height="34" fill="url(#pavers)" />
+                    <rect x="486" y="0" width="34" height="750" fill="url(#pavers)" />
+                    <rect x="680" y="0" width="34" height="750" fill="url(#pavers)" />
+                    <rect x="0" y="264" width="1200" height="162" fill="url(#asphalt)" />
+                    <rect x="520" y="0" width="160" height="750" fill="url(#asphalt)" />
+                    <path d="M0 264H520M680 264h520M0 426H520M680 426h520M520 0v264M680 0v264M520 426v324M680 426v324" fill="none" stroke="#f0f0e9" stroke-width="5" opacity=".9" />
+
+                    <path d="M0 337H510M690 337h510" stroke="#f2b500" stroke-width="5" />
+                    <path d="M0 347H510M690 347h510" stroke="#f2b500" stroke-width="5" />
+                    <path d="M594 0v250M606 0v250M594 450v300M606 450v300" stroke="#f2b500" stroke-width="5" />
+
+                    <g fill="#f7f8f5">
+                        <path d="M532 268h9v32h-9zm16 0h9v32h-9zm16 0h9v32h-9zm16 0h9v32h-9zm16 0h9v32h-9zm16 0h9v32h-9zm16 0h9v32h-9zm16 0h9v32h-9zm16 0h9v32h-9z" />
+                        <path d="M532 390h9v32h-9zm16 0h9v32h-9zm16 0h9v32h-9zm16 0h9v32h-9zm16 0h9v32h-9zm16 0h9v32h-9zm16 0h9v32h-9zm16 0h9v32h-9zm16 0h9v32h-9z" />
+                        <path d="M522 304h32v8h-32zm0 14h32v8h-32zm0 14h32v8h-32zm0 14h32v8h-32zm0 14h32v8h-32zm0 14h32v8h-32zm0 14h32v8h-32z" />
+                        <path d="M646 304h32v8h-32zm0 14h32v8h-32zm0 14h32v8h-32zm0 14h32v8h-32zm0 14h32v8h-32zm0 14h32v8h-32zm0 14h32v8h-32z" />
+                    </g>
+                    <rect x="560" y="310" width="80" height="80" fill="url(#hatch)" stroke="#ffb400" stroke-width="4" />
+                    <g opacity=".92">
+                        <use href="#arrow-left" x="300" y="294" />
+                        <use href="#arrow-left" x="300" y="393" />
+                        <use href="#arrow-up" x="574" y="133" />
+                        <use href="#arrow-up" x="634" y="660" />
+                    </g>
+
+                    <rect x="26" y="508" width="454" height="212" rx="20" fill="#22282a" stroke="#cfd4cf" stroke-width="8" />
+                    <path d="M54 520v178m83-178v178m83-178v178m83-178v178m83-178v178m83-178v178" stroke="#f4f5f2" stroke-width="4" />
+                    <g fill="#f5f6f2" font-family="Arial, sans-serif" font-size="24" font-weight="700" text-anchor="middle">
+                        <text x="95" y="550">1</text><text x="178" y="550">2</text><text x="261" y="550">3</text><text x="344" y="550">4</text><text x="427" y="550">5</text>
+                    </g>
+                    <g class="parked-car" data-parked-car="1" aria-hidden="true" transform="translate(95 615)">
+                        <rect x="-21" y="-43" width="42" height="86" rx="11" fill="#e35c49" stroke="#141a1b" stroke-width="3" />
+                        <path d="M-15-16Q-14-27-8-29H8Q14-27 15-16V16Q14 27 8 29H-8Q-14 27-15 16Z" fill="#344b55" stroke="#c8d6d6" stroke-width="2" />
+                        <path d="M-14-15h28M-14 15h28" stroke="#c8d6d6" stroke-width="2" />
+                        <path d="M-19-32h-5v14h5m0 36h-5v14h5M19-32h5v14h-5m0 36h5v14h-5" fill="#111819" />
+                    </g>
+                    <g class="parked-car" data-parked-car="2" aria-hidden="true" transform="translate(178 615)">
+                        <rect x="-21" y="-43" width="42" height="86" rx="11" fill="#4b91b8" stroke="#141a1b" stroke-width="3" />
+                        <path d="M-15-16Q-14-27-8-29H8Q14-27 15-16V16Q14 27 8 29H-8Q-14 27-15 16Z" fill="#344b55" stroke="#c8d6d6" stroke-width="2" />
+                        <path d="M-14-15h28M-14 15h28" stroke="#c8d6d6" stroke-width="2" />
+                        <path d="M-19-32h-5v14h5m0 36h-5v14h5M19-32h5v14h-5m0 36h5v14h-5" fill="#111819" />
+                    </g>
+                    <g class="parked-car" data-parked-car="3" aria-hidden="true" transform="translate(261 615)">
+                        <rect x="-21" y="-43" width="42" height="86" rx="11" fill="#e4b448" stroke="#141a1b" stroke-width="3" />
+                        <path d="M-15-16Q-14-27-8-29H8Q14-27 15-16V16Q14 27 8 29H-8Q-14 27-15 16Z" fill="#344b55" stroke="#c8d6d6" stroke-width="2" />
+                        <path d="M-14-15h28M-14 15h28" stroke="#c8d6d6" stroke-width="2" />
+                        <path d="M-19-32h-5v14h5m0 36h-5v14h5M19-32h5v14h-5m0 36h5v14h-5" fill="#111819" />
+                    </g>
+                    <g class="parked-car" data-parked-car="4" aria-hidden="true" transform="translate(344 615)">
+                        <rect x="-21" y="-43" width="42" height="86" rx="11" fill="#76a75a" stroke="#141a1b" stroke-width="3" />
+                        <path d="M-15-16Q-14-27-8-29H8Q14-27 15-16V16Q14 27 8 29H-8Q-14 27-15 16Z" fill="#344b55" stroke="#c8d6d6" stroke-width="2" />
+                        <path d="M-14-15h28M-14 15h28" stroke="#c8d6d6" stroke-width="2" />
+                        <path d="M-19-32h-5v14h5m0 36h-5v14h5M19-32h5v14h-5m0 36h5v14h-5" fill="#111819" />
+                    </g>
+                    <g class="parked-car" data-parked-car="5" aria-hidden="true" transform="translate(427 615)">
+                        <rect x="-21" y="-43" width="42" height="86" rx="11" fill="#ad78a5" stroke="#141a1b" stroke-width="3" />
+                        <path d="M-15-16Q-14-27-8-29H8Q14-27 15-16V16Q14 27 8 29H-8Q-14 27-15 16Z" fill="#344b55" stroke="#c8d6d6" stroke-width="2" />
+                        <path d="M-14-15h28M-14 15h28" stroke="#c8d6d6" stroke-width="2" />
+                        <path d="M-19-32h-5v14h5m0 36h-5v14h5M19-32h5v14h-5m0 36h5v14h-5" fill="#111819" />
+                    </g>
+                    <path d="M478 464v42h42" fill="none" stroke="#edece5" stroke-width="5" />
+                    <g transform="translate(480 511)">
+                        <rect x="-13" y="-9" width="24" height="18" rx="4" fill="#eda928" stroke="#35342c" stroke-width="2" />
+                        <circle cx="-6" cy="0" r="4" fill="#f24d3b" />
+                        <path d="M-13 0h-44" stroke="#f4f4ee" stroke-width="6" />
+                        <path d="M-14 0h-42" stroke="#df3b32" stroke-width="3" stroke-dasharray="8 8" />
+                    </g>
+
+                    <g fill="#6da546" opacity=".75">
+                        <circle cx="195" cy="220" r="3"/><circle cx="278" cy="238" r="2"/><circle cx="973" cy="222" r="3"/>
+                        <circle cx="921" cy="474" r="3"/><circle cx="1000" cy="486" r="2"/><circle cx="278" cy="476" r="2"/>
+                    </g>
+                </svg>
+                <div class="map-signal map-signal--horizontal">
+                    <span class="street-signal-name">Via horizontal</span>
+                    <div class="street-light" data-direction="horizontal" role="img" aria-label="Semáforo da via horizontal aguardando status">
+                        <span class="light red" data-signal-light="red" aria-hidden="true"></span>
+                        <span class="light yellow" data-signal-light="yellow" aria-hidden="true"></span>
+                        <span class="light green" data-signal-light="green" aria-hidden="true"></span>
+                    </div>
+                    <p id="signal-status-horizontal" class="signal-status" role="status" aria-live="polite">Aguardando sinal</p>
+                </div>
+                <div class="map-signal map-signal--vertical">
+                    <span class="street-signal-name">Via vertical</span>
+                    <div class="street-light" data-direction="vertical" role="img" aria-label="Semáforo da via vertical aguardando status">
+                        <span class="light red" data-signal-light="red" aria-hidden="true"></span>
+                        <span class="light yellow" data-signal-light="yellow" aria-hidden="true"></span>
+                        <span class="light green" data-signal-light="green" aria-hidden="true"></span>
+                    </div>
+                    <p id="signal-status-vertical" class="signal-status" role="status" aria-live="polite">Aguardando sinal</p>
+                </div>
+            </div>
+            <div class="map-caption">
+                <span><strong>SEMÁFOROS</strong> Atualização em tempo real via ESP32</span>
+                <span>MQTT · semaforo/esp32/status</span>
+            </div>
         </section>
 
         <section id="availability-panel" class="overview" data-state="waiting" aria-label="Disponibilidade do estacionamento">
@@ -532,32 +642,7 @@
             </div>
         </section>
 
-        <section class="signal-panel" aria-labelledby="signals-title">
-                <h2 id="signals-title" class="signal-title">SEMÁFOROS DA RUA</h2>
-                <div class="street-scene" role="group" aria-label="Cruzamento com dois semáforos">
-                    <div class="street-signal">
-                        <span class="street-signal-name">Entrada</span>
-                        <div class="street-light" data-direction="entrada" role="img" aria-label="Semáforo da entrada aguardando status independente">
-                            <span class="light red" data-signal-light="red" aria-hidden="true"></span>
-                            <span class="light yellow" data-signal-light="yellow" aria-hidden="true"></span>
-                            <span class="light green" data-signal-light="green" aria-hidden="true"></span>
-                        </div>
-                        <p id="signal-status-entrada" class="signal-status" role="status" aria-live="polite">Aguardando sinal do semáforo</p>
-                    </div>
-                    <div class="street-signal">
-                        <span class="street-signal-name">Saída</span>
-                        <div class="street-light" data-direction="saida" role="img" aria-label="Semáforo da saída aguardando status independente">
-                            <span class="light red" data-signal-light="red" aria-hidden="true"></span>
-                            <span class="light yellow" data-signal-light="yellow" aria-hidden="true"></span>
-                            <span class="light green" data-signal-light="green" aria-hidden="true"></span>
-                        </div>
-                        <p id="signal-status-saida" class="signal-status" role="status" aria-live="polite">Aguardando sinal do semáforo</p>
-                    </div>
-                </div>
-                <p class="signal-caption">Status próprios recebidos do tópico MQTT semaforo/esp32/status.</p>
-        </section>
-
-        <p class="section-label">ACESSO E SENSOR</p>
+        <p class="section-label">ESTACIONAMENTO E ACESSO</p>
         <section class="details-grid" aria-label="Controles do estacionamento">
             <article class="detail-panel">
                 <div class="detail-heading">
@@ -585,7 +670,7 @@
             </article>
         </section>
 
-        <p class="footer-note">Estacionamento conectado via ESP32 e Mosquitto</p>
+        <p class="footer-note">Smart City conectada via ESP32 e Mosquitto</p>
     </main>
 
     <script src="/socket.io/socket.io.js"></script>
@@ -596,9 +681,10 @@
         const connectionLabel = document.getElementById('connection-label');
         const availabilityMessage = document.getElementById('availability-message');
         const signalStatuses = {
-            entrada: document.getElementById('signal-status-entrada'),
-            saida: document.getElementById('signal-status-saida')
+            horizontal: document.getElementById('signal-status-horizontal'),
+            vertical: document.getElementById('signal-status-vertical')
         };
+        const parkedCars = Array.from(document.querySelectorAll('[data-parked-car]'));
         const sensorStatus = document.getElementById('sensor-status');
         const sensorDescription = document.getElementById('sensor-description');
         const barrierButton = document.getElementById('btn-controle');
@@ -631,7 +717,7 @@
             } else if (mqttConectado && !comandoPendente) {
                 barrierDescription.textContent = 'A posição física depende de confirmação do ESP32.';
                 if (!recebeuStatusSemaforos) {
-                    atualizarSemaforos(null, 'Aguardando sinal do semáforo');
+                    atualizarSemaforos(null, 'Aguardando sinal');
                 }
             }
         });
@@ -658,6 +744,7 @@
             if (!Number.isInteger(numVagas) || numVagas < 0) return;
 
             atualizarDadosSemaforos(data);
+            atualizarCarrosEstacionados(numVagas);
             recebeuLeitura = true;
             document.getElementById('vagas').textContent = numVagas;
             if (numVagas === 0) {
@@ -678,6 +765,13 @@
             }
         });
 
+        function atualizarCarrosEstacionados(vagasDisponiveis) {
+            const quantidadeOcupada = Math.max(0, Math.min(parkedCars.length, parkedCars.length - vagasDisponiveis));
+            parkedCars.forEach((carro, indice) => {
+                carro.classList.toggle('is-parked', indice < quantidadeOcupada);
+            });
+        }
+
         function atualizarDadosSemaforos(data) {
             if (!data || typeof data !== 'object') return;
 
@@ -687,13 +781,13 @@
                 verde: 'green', green: 'green', g: 'green',
                 apagado: 'off', off: 'off'
             };
-            const valorEntrada = data.sem1 ?? data.semaforo1 ?? data.entrada;
-            const valorSaida = data.sem2 ?? data.semaforo2 ?? data.saida;
+            const valorHorizontal = data.sem1 ?? data.semaforo1 ?? data.entrada;
+            const valorVertical = data.sem2 ?? data.semaforo2 ?? data.saida;
             const estados = {
-                entrada: cores[String(valorEntrada ?? '').trim().toLowerCase()],
-                saida: cores[String(valorSaida ?? '').trim().toLowerCase()]
+                horizontal: cores[String(valorHorizontal ?? '').trim().toLowerCase()],
+                vertical: cores[String(valorVertical ?? '').trim().toLowerCase()]
             };
-            if (estados.entrada === undefined || estados.saida === undefined) return;
+            if (estados.horizontal === undefined || estados.vertical === undefined) return;
 
             recebeuStatusSemaforos = true;
             atualizarSemaforos(estados);
@@ -702,15 +796,14 @@
         socket.on('atualizarSemaforos', atualizarDadosSemaforos);
 
         function atualizarSemaforos(estados, mensagem) {
-            Object.keys(signalStatuses).forEach((direcao) => {
-                const cor = estados && estados[direcao];
+            Object.keys(signalStatuses).forEach((via) => {
+                const cor = estados && estados[via];
                 const nomeCor = { red: 'Vermelho', yellow: 'Amarelo', green: 'Verde', off: 'Apagado' }[cor];
                 const status = nomeCor || mensagem;
-                const semaforo = document.querySelector(`.street-light[data-direction="${direcao}"]`);
-                const nomeDirecao = direcao === 'saida' ? 'saída' : 'entrada';
+                const semaforo = document.querySelector(`.street-light[data-direction="${via}"]`);
 
-                signalStatuses[direcao].textContent = status;
-                semaforo.setAttribute('aria-label', `Semáforo da ${nomeDirecao}: ${status.toLowerCase()}`);
+                signalStatuses[via].textContent = status;
+                semaforo.setAttribute('aria-label', `Semáforo da via ${via}: ${status.toLowerCase()}`);
                 semaforo.querySelectorAll('[data-signal-light]').forEach((luz) => {
                     luz.classList.toggle('active', luz.dataset.signalLight === cor);
                 });
